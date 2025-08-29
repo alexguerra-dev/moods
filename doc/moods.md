@@ -11,6 +11,10 @@ I just had a thought. This would probably be easiest with Coda. That is a pretty
 
 ## Feature List
 
+- Admin Page
+- Settings Page
+- Journal Page
+
 - What is the pollen count?
 
 ## Project Information

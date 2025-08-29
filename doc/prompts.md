@@ -7,3 +7,7 @@ I am crafting a prompt to help me come up with an MVP feature list.
 > - Mobile
 > - Friendly Interface
 > - Easy To Use
+
+> Create a README for this project that includes setup instructions, usage examples, and API overview
+
+> Add comprehensive JSDoc comments to this class, documenting all methods and their parameters
