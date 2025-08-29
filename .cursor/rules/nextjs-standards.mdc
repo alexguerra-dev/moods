@@ -1,0 +1,41 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Next.js 15 & React 19 Development Standards
+
+## File Structure & Naming
+
+-   Use the App Router structure with `app/` directory
+-   Place components in `app/components/` or co-locate with pages
+-   Use `page.tsx` for route pages, `layout.tsx` for layouts
+-   Follow Next.js 15 conventions for metadata and routing
+
+## TypeScript Standards
+
+-   Always use TypeScript for new files
+-   Use strict type checking with proper interfaces
+-   Prefer `Readonly<>` for props when possible
+-   Use Next.js built-in types like `Metadata` from 'next'
+
+## React 19 Standards
+
+-   Use functional components with hooks
+-   Leverage React 19 features like automatic batching
+-   Use `export default` for page components
+-   Keep components simple and focused
+
+## Styling Approach
+
+-   Use Tailwind CSS 4 for styling
+-   Import global styles in `app/layout.tsx`
+-   Follow mobile-first responsive design
+-   Keep UI simple and kid-friendly
+
+## Performance
+
+-   Use Turbopack for development (`--turbopack` flag)
+-   Optimize for mobile performance
+-   Keep bundle size minimal for quick loading

@@ -1,0 +1,49 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Mood Tracking Feature Requirements
+
+## Core MVP Features
+
+-   **Mood Selection**: 5-7 basic mood options (Happy, Sad, Angry, Calm, Excited, etc.)
+-   **Quick Logging**: Single tap to log current mood
+-   **Timestamp**: Automatic recording of when mood was logged
+-   **Visual Confirmation**: Clear feedback that mood was recorded
+-   **Mood History**: Simple view of recent mood entries
+
+## Mood Categories
+
+-   **Primary Moods**: Happy, Sad, Angry, Calm, Excited
+-   **Secondary Moods**: Tired, Hungry, Scared, Proud, Confused
+-   **Mood Intensity**: Simple scale (Low, Medium, High) for older kids
+-   **Custom Moods**: Allow kids to create their own mood names
+
+## Data Structure
+
+-   **Mood Entry**:
+    -   Mood type (string)
+    -   Timestamp (ISO date)
+    -   Optional note (text, for older kids)
+    -   Mood intensity (optional)
+-   **Storage**: Local storage for offline access, sync when online
+-   **Privacy**: No personal data collection, local-first approach
+
+## User Experience Flow
+
+1. **Open App**: Quick loading, minimal splash screen
+2. **Mood Selection**: Large, colorful mood buttons
+3. **Log Mood**: Single tap confirmation
+4. **Success Feedback**: Visual and optional audio confirmation
+5. **History View**: Simple list of recent moods
+6. **Settings**: Basic preferences and customization
+
+## Future Enhancements
+
+-   **Mood Patterns**: Simple charts showing mood trends
+-   **Reminders**: Gentle prompts to log mood
+-   **Family Sharing**: Safe sharing with parents/guardians
+-   **Mood Journal**: Simple text entry for older kids
+-   **Achievements**: Fun badges for consistent mood logging
