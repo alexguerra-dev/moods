@@ -1,14 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import type { MoodEntry, MoodOption, MoodIntensity } from './types/mood'
-import { formatTime, formatDate } from './utils/dateUtils'
-import {
-    loadMoodHistory,
-    saveMoodHistory,
-    clearMoodHistory,
-    getMoodStats,
-} from './utils/storage'
+import type { MoodOption, MoodIntensity } from './types/mood'
+import type { User } from './types/user'
+import LoginModal from './components/LoginModal'
+import FamilyMoodFeed from './components/FamilyMoodFeed'
 
 const MOODS: MoodOption[] = [
     { name: 'Happy', emoji: '😊', color: 'bg-yellow-400 hover:bg-yellow-500' },
@@ -21,76 +17,127 @@ const MOODS: MoodOption[] = [
 ]
 
 export default function Home() {
+    const [currentUser, setCurrentUser] = useState<User | null>(null)
+    const [showLoginModal, setShowLoginModal] = useState(false)
     const [selectedMood, setSelectedMood] = useState<string>('')
     const [moodIntensity, setMoodIntensity] = useState<MoodIntensity>('medium')
-    const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([])
+    const [moodNote, setMoodNote] = useState<string>('')
     const [showSuccess, setShowSuccess] = useState(false)
 
-    // Load mood history from localStorage on component mount
+    // Check if user is already logged in (from localStorage)
     useEffect(() => {
-        const savedMoods = loadMoodHistory()
-        setMoodHistory(savedMoods)
+        const savedUser = localStorage.getItem('moods-current-user')
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser)
+                // Convert timestamp back to Date
+                user.createdAt = new Date(user.createdAt)
+                setCurrentUser(user)
+            } catch (error) {
+                console.error('Error loading saved user:', error)
+                localStorage.removeItem('moods-current-user')
+            }
+        } else {
+            setShowLoginModal(true)
+        }
     }, [])
 
-    // Save mood history to localStorage whenever it changes
-    useEffect(() => {
-        saveMoodHistory(moodHistory)
-    }, [moodHistory])
+    const handleLogin = (user: User) => {
+        setCurrentUser(user)
+        localStorage.setItem('moods-current-user', JSON.stringify(user))
+        setShowLoginModal(false)
+    }
 
-    const logMood = () => {
-        if (!selectedMood) return
+    const handleLogout = () => {
+        setCurrentUser(null)
+        localStorage.removeItem('moods-current-user')
+        setShowLoginModal(true)
+    }
 
-        const newMood: MoodEntry = {
-            id: Date.now().toString(),
+    const logMood = async () => {
+        if (!selectedMood || !currentUser) return
+
+        const newMood = {
+            userId: currentUser.id,
+            userName: currentUser.name,
+            userIcon: currentUser.icon,
+            userColor: currentUser.color,
             mood: selectedMood,
-            timestamp: new Date(),
             intensity: moodIntensity,
+            note: moodNote.trim() || undefined,
         }
 
-        setMoodHistory((prev) => [newMood, ...prev])
-        setSelectedMood('')
-        setShowSuccess(true)
+        try {
+            const response = await fetch('/api/moods', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newMood),
+            })
 
-        // Hide success message after 2 seconds
-        setTimeout(() => setShowSuccess(false), 2000)
-    }
+            const data = await response.json()
 
-    const handleClearHistory = () => {
-        if (confirm('Are you sure you want to clear all your mood history?')) {
-            setMoodHistory([])
-            clearMoodHistory()
+            if (data.success) {
+                setSelectedMood('')
+                setMoodIntensity('medium')
+                setMoodNote('')
+                setShowSuccess(true)
+
+                // Hide success message after 2 seconds
+                setTimeout(() => setShowSuccess(false), 2000)
+            } else {
+                alert('Failed to log mood. Please try again.')
+            }
+        } catch {
+            alert('Network error. Please try again.')
         }
     }
 
-    const moodStats = getMoodStats(moodHistory)
+    if (!currentUser) {
+        return (
+            <LoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                onLogin={handleLogin}
+            />
+        )
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
             <div className="max-w-md mx-auto">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                {/* Header with User Info */}
+                <div className="text-center mb-6">
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                        <div
+                            className="text-4xl p-3 rounded-full"
+                            style={{
+                                backgroundColor: `${currentUser.color}20`,
+                            }}
+                        >
+                            {currentUser.icon}
+                        </div>
+                        <div className="text-left">
+                            <div className="text-lg font-semibold text-gray-800">
+                                Hi, {currentUser.name}!
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="text-sm text-blue-500 hover:text-blue-700"
+                            >
+                                Switch User
+                            </button>
+                        </div>
+                    </div>
+                    <h1 className="text-3xl font-bold text-gray-800 mb-2">
                         How are you feeling?
                     </h1>
                     <p className="text-gray-600">Tap on a mood to log it!</p>
                 </div>
 
-                {/* Quick Stats */}
-                {moodHistory.length > 0 && (
-                    <div className="bg-white rounded-2xl p-4 shadow-lg mb-6">
-                        <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">
-                                {moodStats.totalEntries}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                                Total Moods Logged
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* Mood Selection */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-2 gap-4 mb-6">
                     {MOODS.map((mood) => (
                         <button
                             key={mood.name}
@@ -109,35 +156,62 @@ export default function Home() {
                     ))}
                 </div>
 
-                {/* Intensity Selection */}
+                {/* Mood Logging Form */}
                 {selectedMood && (
                     <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
                         <h3 className="text-lg font-semibold text-gray-800 mb-4">
                             How {selectedMood.toLowerCase()} are you feeling?
                         </h3>
-                        <div className="flex gap-3">
-                            {(['low', 'medium', 'high'] as const).map(
-                                (intensity) => (
-                                    <button
-                                        key={intensity}
-                                        onClick={() =>
-                                            setMoodIntensity(intensity)
-                                        }
-                                        className={`flex-1 py-3 px-4 rounded-xl font-medium transition-colors ${
-                                            moodIntensity === intensity
-                                                ? 'bg-blue-500 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                    >
-                                        {intensity.charAt(0).toUpperCase() +
-                                            intensity.slice(1)}
-                                    </button>
-                                ),
-                            )}
+
+                        {/* Intensity Selection */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Intensity Level
+                            </label>
+                            <div className="flex gap-3">
+                                {(['low', 'medium', 'high'] as const).map(
+                                    (intensity) => (
+                                        <button
+                                            key={intensity}
+                                            onClick={() =>
+                                                setMoodIntensity(intensity)
+                                            }
+                                            className={`flex-1 py-3 px-4 rounded-xl font-medium transition-colors ${
+                                                moodIntensity === intensity
+                                                    ? 'bg-blue-500 text-white'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            {intensity.charAt(0).toUpperCase() +
+                                                intensity.slice(1)}
+                                        </button>
+                                    ),
+                                )}
+                            </div>
                         </div>
+
+                        {/* Optional Note */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Add a note (optional)
+                            </label>
+                            <textarea
+                                value={moodNote}
+                                onChange={(e) => setMoodNote(e.target.value)}
+                                placeholder="Why are you feeling this way?"
+                                className="w-full p-3 border border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none resize-none"
+                                rows={2}
+                                maxLength={200}
+                            />
+                            <div className="text-right text-xs text-gray-500 mt-1">
+                                {moodNote.length}/200
+                            </div>
+                        </div>
+
+                        {/* Log Button */}
                         <button
                             onClick={logMood}
-                            className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl transition-colors"
+                            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl transition-colors"
                         >
                             Log My Mood! 🎉
                         </button>
@@ -151,57 +225,8 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* Mood History */}
-                {moodHistory.length > 0 && (
-                    <div className="bg-white rounded-2xl p-6 shadow-lg">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                                Recent Moods
-                            </h3>
-                            <button
-                                onClick={handleClearHistory}
-                                className="text-sm text-red-500 hover:text-red-700"
-                            >
-                                Clear All
-                            </button>
-                        </div>
-                        <div className="space-y-3">
-                            {moodHistory.slice(0, 10).map((entry) => (
-                                <div
-                                    key={entry.id}
-                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-2xl">
-                                            {
-                                                MOODS.find(
-                                                    (m) =>
-                                                        m.name === entry.mood,
-                                                )?.emoji
-                                            }
-                                        </span>
-                                        <div>
-                                            <div className="font-medium text-gray-800">
-                                                {entry.mood}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                {entry.intensity} intensity •{' '}
-                                                {formatTime(entry.timestamp)} •{' '}
-                                                {formatDate(entry.timestamp)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        {moodHistory.length > 10 && (
-                            <p className="text-center text-sm text-gray-500 mt-3">
-                                Showing last 10 moods • Total:{' '}
-                                {moodHistory.length}
-                            </p>
-                        )}
-                    </div>
-                )}
+                {/* Family Mood Feed */}
+                <FamilyMoodFeed currentUserId={currentUser.id} />
             </div>
         </div>
     )
