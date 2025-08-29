@@ -17,7 +17,7 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Technologis Used
+## Technologies Used
 
 - [TypeScript](https://www.typescriptlang.org/)
 - [React](https://react.dev/)
@@ -37,3 +37,10 @@ I have two branches deployed to [Vercel](https://vercel.com/).
 
 - [Moods - Production](https://moods.lovelyvector.com/)
 - [Moods - Development](https://dev.moods.lovelyvector.com/)
+
+---
+
+## Project Documentation
+
+- [Main Documentation](/doc/moods.md)
+- [Project Task List](/doc/tasks.md)
