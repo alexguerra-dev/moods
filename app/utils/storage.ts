@@ -2,13 +2,22 @@ import type { MoodEntry } from '../types/mood'
 
 const STORAGE_KEY = 'moods-app-data'
 
+// Type for the raw data structure from localStorage
+interface RawMoodEntry {
+    id: string
+    mood: string
+    timestamp: string // ISO string from localStorage
+    intensity?: 'low' | 'medium' | 'high'
+    note?: string
+}
+
 export const loadMoodHistory = (): MoodEntry[] => {
     try {
         const savedData = localStorage.getItem(STORAGE_KEY)
         if (savedData) {
-            const parsed = JSON.parse(savedData)
+            const parsed: RawMoodEntry[] = JSON.parse(savedData)
             // Convert timestamp strings back to Date objects
-            return parsed.map((entry: any) => ({
+            return parsed.map((entry: RawMoodEntry) => ({
                 ...entry,
                 timestamp: new Date(entry.timestamp),
             }))
