@@ -1,0 +1,18 @@
+{
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "useTabs": false,
+    "trailingComma": "all",
+    "editor.formatOnSave": true,
+    "printWidth": 80,
+    "proseWrap": "preserve",
+    "overrides": [
+        {
+            "files": ["*.md"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}
