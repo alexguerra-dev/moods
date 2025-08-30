@@ -1,0 +1,48 @@
+---
+alwaysApply: true
+---
+
+# UI/UX Standards for Kid-Friendly Mood Tracking
+
+## Design Principles
+
+-   **Simplicity First**: One action per screen, minimal cognitive load
+-   **Visual Clarity**: Large, clear buttons and text
+-   **Color Psychology**: Use colors that represent different moods
+-   **Touch-Friendly**: Minimum 44px touch targets for mobile
+-   **Quick Access**: Minimize steps to log a mood
+
+## Mood Interface Requirements
+
+-   **Mood Selection**: Large, colorful mood buttons/icons
+-   **Quick Entry**: Single tap to log mood
+-   **Visual Feedback**: Immediate confirmation of mood logged
+-   **No Complex Forms**: Avoid text input for kids
+-   **Fun Elements**: Engaging animations and sounds
+
+## Mobile-First Design
+
+-   **Responsive Layout**: Works on all screen sizes
+-   **Touch Navigation**: Swipe gestures and large buttons
+-   **Home Screen Shortcut**: Easy access from phone shortcuts
+-   **Offline Capable**: Basic functionality without internet
+-   **Fast Loading**: Optimized for quick mood logging
+
+## Accessibility
+
+-   **High Contrast**: Clear visual hierarchy
+-   **Large Text**: Readable font sizes
+-   **Simple Language**: Kid-appropriate vocabulary
+-   **Visual Icons**: Support text with meaningful icons
+-   **Error Prevention**: Clear feedback and undo options
+
+## Color & Typography
+
+-   **Mood Colors**:
+    -   Happy: Yellow/Orange
+    -   Sad: Blue
+    -   Angry: Red
+    -   Calm: Green
+    -   Excited: Pink/Purple
+-   **Font Choice**: Rounded, friendly typography
+-   **Button Design**: Pill-shaped, high-contrast buttons

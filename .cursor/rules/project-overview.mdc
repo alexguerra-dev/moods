@@ -1,0 +1,46 @@
+---
+alwaysApply: true
+---
+
+# Moods App Project Overview
+
+## Project Description
+
+Moods is a simple, intuitive web app for tracking daily emotions, designed to be kid-friendly and accessible via mobile devices. The app focuses on easy mood logging, pattern discovery, and mental health insights.
+
+## Core Architecture
+
+-   **Framework**: Next.js 15.5.2 with App Router
+-   **Language**: TypeScript 5
+-   **Styling**: Tailwind CSS 4
+-   **React**: Version 19.1.0
+-   **Deployment**: Vercel with production and development environments
+
+## Key Files & Structure
+
+-   **Entry Point**: [app/page.tsx](mdc:app/page.tsx) - Main homepage
+-   **Layout**: [app/layout.tsx](mdc:app/layout.tsx) - Root layout with metadata
+-   **Styling**: [app/globals.css](mdc:app/globals.css) - Global styles
+-   **Configuration**: [next.config.ts](mdc:next.config.ts), [tsconfig.json](mdc:tsconfig.json)
+-   **Dependencies**: [package.json](mdc:package.json) - Project dependencies and scripts
+
+## Project Goals
+
+-   **MVP Focus**: Simple mood tracking for kids
+-   **Mobile-First**: Kid-friendly mobile interface
+-   **Easy Access**: Quick shortcut access from phone home screen
+-   **Educational**: Learning app development with AI tooling
+
+## Development Commands
+
+-   `yarn dev` - Start development server with Turbopack
+-   `yarn build` - Build for production with Turbopack
+-   `yarn start` - Start production server
+-   `yarn lint` - Run ESLint
+
+## Documentation
+
+-   [Project Goals](mdc:doc/goals.md)
+-   [Feature List](mdc:doc/moods.md)
+-   [Task List](mdc:doc/tasks.md)
+-   [README](mdc:README.md)

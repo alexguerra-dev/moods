@@ -1,0 +1,48 @@
+---
+alwaysApply: true
+---
+
+# Development Workflow & Best Practices
+
+## Project Setup
+
+-   **Environment**: Use `yarn` as package manager
+-   **Development**: `yarn dev` with Turbopack for fast refresh
+-   **Linting**: Run `yarn lint` before commits
+-   **Type Checking**: TypeScript strict mode enabled
+
+## Code Organization
+
+-   **Components**: Place reusable components in `app/components/`
+-   **Pages**: Use `app/` directory structure for routing
+-   **Styles**: Global styles in `app/globals.css`, component-specific in Tailwind
+-   **Types**: Create interfaces in `app/types/` or co-locate with components
+
+## Feature Development
+
+-   **MVP Focus**: Start with core mood logging functionality
+-   **Mobile Testing**: Test on mobile devices frequently
+-   **Kid Testing**: Validate interface with target age group
+-   **Progressive Enhancement**: Build basic functionality first, enhance later
+
+## Git Workflow
+
+-   **Branches**:
+    -   `main` - Production code
+    -   `development` - Development/testing
+-   **Commits**: Clear, descriptive commit messages
+-   **Deployment**: Automatic deployment to Vercel from branches
+
+## Testing Strategy
+
+-   **Manual Testing**: Test mood logging flow on mobile
+-   **Performance**: Monitor bundle size and loading speed
+-   **Accessibility**: Ensure kid-friendly interface works for all users
+-   **Cross-Device**: Test on various mobile devices and screen sizes
+
+## Documentation
+
+-   **Code Comments**: Explain complex logic, especially for educational purposes
+-   **README Updates**: Keep project documentation current
+-   **Feature Docs**: Document new features in `doc/` directory
+-   **API Documentation**: Document any data structures or interfaces
