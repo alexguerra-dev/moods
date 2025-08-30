@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase, TABLES } from '../../config/supabase'
 import type { User, FamilyMember } from '../../types/user'
 
-// Mock database - in production, this would be a real database
-const FAMILY_USERS: User[] = [
+// Fallback data when Supabase is not configured
+const FALLBACK_USERS: User[] = [
     {
         id: '1',
         name: 'Alex',
@@ -44,9 +45,39 @@ const FAMILY_USERS: User[] = [
 // GET /api/users - Get all family members (without sensitive data)
 export async function GET() {
     try {
-        const familyMembers: FamilyMember[] = FAMILY_USERS.filter(
-            (user) => user.isActive,
-        ).map((user) => ({
+        // If Supabase is not configured, use fallback data
+        if (!supabase) {
+            console.warn('Using fallback user data - Supabase not configured')
+            const familyMembers: FamilyMember[] = FALLBACK_USERS.filter(
+                (user) => user.isActive,
+            ).map((user) => ({
+                id: user.id,
+                name: user.name,
+                icon: user.icon,
+                color: user.color,
+            }))
+
+            return NextResponse.json({
+                success: true,
+                familyMembers,
+            })
+        }
+
+        const { data: users, error } = await supabase
+            .from(TABLES.USERS)
+            .select('id, name, icon, color')
+            .eq('is_active', true)
+            .order('name')
+
+        if (error) {
+            console.error('Supabase error:', error)
+            return NextResponse.json(
+                { success: false, error: 'Failed to fetch family members' },
+                { status: 500 },
+            )
+        }
+
+        const familyMembers: FamilyMember[] = users.map((user) => ({
             id: user.id,
             name: user.name,
             icon: user.icon,
@@ -70,9 +101,40 @@ export async function POST(request: NextRequest) {
     try {
         const { userId, pin } = await request.json()
 
-        const user = FAMILY_USERS.find((u) => u.id === userId && u.pin === pin)
+        // If Supabase is not configured, use fallback data
+        if (!supabase) {
+            console.warn(
+                'Using fallback user authentication - Supabase not configured',
+            )
+            const user = FALLBACK_USERS.find(
+                (u) => u.id === userId && u.pin === pin,
+            )
 
-        if (!user) {
+            if (!user) {
+                return NextResponse.json(
+                    { success: false, error: 'Invalid credentials' },
+                    { status: 401 },
+                )
+            }
+
+            // Return user data without the PIN
+            const { pin: _unused, ...safeUser } = user
+
+            return NextResponse.json({
+                success: true,
+                user: safeUser,
+            })
+        }
+
+        const { data: user, error } = await supabase
+            .from(TABLES.USERS)
+            .select('*')
+            .eq('id', userId)
+            .eq('pin', pin)
+            .eq('is_active', true)
+            .single()
+
+        if (error || !user) {
             return NextResponse.json(
                 { success: false, error: 'Invalid credentials' },
                 { status: 401 },
