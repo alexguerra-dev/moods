@@ -34,7 +34,7 @@ export interface MoodEntryWithUser {
     userIcon: string
     userColor: string
     mood: string
-    timestamp: Date
+    timestamp: Date | string
     intensity?: 'low' | 'medium' | 'high'
     note?: string
 }

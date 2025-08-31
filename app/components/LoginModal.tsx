@@ -196,7 +196,7 @@ export default function LoginModal({
                         disabled={
                             !selectedUserId || pin.length !== 4 || isLoading
                         }
-                        className="flex-1 py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? 'Logging in...' : 'Login'}
                     </button>

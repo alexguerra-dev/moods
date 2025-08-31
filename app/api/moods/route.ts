@@ -31,17 +31,28 @@ export async function GET() {
         }
 
         // Convert database format to our app format
-        const formattedMoods: MoodEntryWithUser[] = moods.map((mood) => ({
-            id: mood.id,
-            userId: mood.user_id,
-            userName: mood.user_name,
-            userIcon: mood.user_icon,
-            userColor: mood.user_color,
-            mood: mood.mood,
-            intensity: mood.intensity,
-            note: mood.note,
-            timestamp: new Date(mood.created_at),
-        }))
+        const formattedMoods: MoodEntryWithUser[] = moods.map((mood) => {
+            // Ensure we create a valid Date object
+            let timestamp: Date | string
+            try {
+                const dateObj = new Date(mood.created_at)
+                timestamp = isNaN(dateObj.getTime()) ? mood.created_at : dateObj
+            } catch {
+                timestamp = mood.created_at
+            }
+
+            return {
+                id: mood.id,
+                userId: mood.user_id,
+                userName: mood.user_name,
+                userIcon: mood.user_icon,
+                userColor: mood.user_color,
+                mood: mood.mood,
+                intensity: mood.intensity,
+                note: mood.note,
+                timestamp,
+            }
+        })
 
         return NextResponse.json({
             success: true,
@@ -120,7 +131,9 @@ export async function POST(request: NextRequest) {
             mood: insertedMood.mood,
             intensity: insertedMood.intensity,
             note: insertedMood.note,
-            timestamp: new Date(insertedMood.created_at),
+            timestamp: insertedMood.created_at
+                ? new Date(insertedMood.created_at)
+                : new Date(),
         }
 
         return NextResponse.json({
